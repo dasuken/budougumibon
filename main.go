@@ -6,28 +6,27 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 
+	"github.com/dasuken/budougumibon/config"
 	"golang.org/x/sync/errgroup"
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		log.Print("need port number \n")
-		os.Exit(1)
-	}
-
-	p := os.Args[1]
-	l, err := net.Listen("tcp", fmt.Sprintf(":%s", p))
-	if err != nil {
-		log.Fatalf("failed to listen port %s, err: %v \n", p, err)
-	}
-	if err := run(context.Background(), l); err != nil {
+	if err := run(context.Background()); err != nil {
 		log.Printf("failed to terminate server: %v", err)
 	}
 }
 
-func run(ctx context.Context, l net.Listener) error {
+func run(ctx context.Context) error {
+	cfg, _ := config.New()
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
+	if err != nil {
+		log.Fatalf("failed to listen port %d, err: %v \n", cfg.Port, err)
+	}
+
+	url := fmt.Sprintf("http://%s", l.Addr().String())
+	log.Printf("start with %s\n", url)
+
 	s := &http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "Hello, %s", r.URL.Path[1:])
