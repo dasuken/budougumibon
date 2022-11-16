@@ -23,7 +23,8 @@ func run(ctx context.Context) error {
 		}),
 	}
 
-	eg, ctx := errgroup.WithContext(context.Background())
+	// 引数のcontext使わなかったら、親のcancelが届かない
+	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Printf("failed to close: %+v", err)
@@ -34,14 +35,16 @@ func run(ctx context.Context) error {
 	})
 
 	<-ctx.Done()
-	if err := s.Shutdown(ctx); err != nil {
+	// ここでctx渡さないのは何故なのかな
+	// Shutdownで即キャンセル関数が走って`context canceledが帰ってくる`
+	// shutdownはサーバー内部のコンテキストツリーにキャンセル処理を走らせhttp.ErrServerClosedを送信
+	// 尚且つ引数のcontextにcancel処理
+	// shutodownは内部実装的にctx.Doneで値を取得するとctx.Errを返し、なければ適当なtimeout(nextPoll)を設定してシャットダウン
+	// nextPoll()のtickが具体的にどう決定されるのかはまだ見てない
+	if err := s.Shutdown(context.Background()); err != nil {
 		log.Println("server shut down")
 		return err
 	}
-
-	// error group まとめる
-	// signalやその他の理由によりサーバーが止まったらシャットダウン処理
-	//
 
 	return eg.Wait()
 }
