@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
@@ -21,5 +23,25 @@ func run(ctx context.Context) error {
 		}),
 	}
 
-	return s.ListenAndServe()
+	eg, ctx := errgroup.WithContext(context.Background())
+	eg.Go(func() error {
+		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Printf("failed to close: %+v", err)
+			return err
+		}
+
+		return nil
+	})
+
+	<-ctx.Done()
+	if err := s.Shutdown(ctx); err != nil {
+		log.Println("server shut down")
+		return err
+	}
+
+	// error group まとめる
+	// signalやその他の理由によりサーバーが止まったらシャットダウン処理
+	//
+
+	return eg.Wait()
 }
