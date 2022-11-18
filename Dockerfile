@@ -2,7 +2,7 @@ FROM golang:1.18.2-bullseye as deploy-builder
 
 WORKDIR /app
 
-COPY go.sum go.mod .
+COPY go.sum go.mod ./
 RUN go mod download
 
 COPY . .
