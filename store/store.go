@@ -3,7 +3,7 @@ package store
 import "github.com/dasuken/budougumibon/entity"
 
 var (
-	Tasks = &TaskStore{}
+	Tasks = &TaskStore{Tasks: map[entity.TaskID]*entity.Task{}}
 )
 
 type TaskStore struct {
