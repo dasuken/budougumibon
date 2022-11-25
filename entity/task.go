@@ -16,7 +16,7 @@ type Task struct {
 	Title  string     `json:"title"`
 	Status TaskStatus `json:"status"`
 	// time.Timeとrdb(postgre)のtimestamp date どうキャストすんだろ
-	CreatedAt time.Time `json:"created_at"`
+	Created time.Time `json:"created"`
 }
 
 type Tasks []*Task
