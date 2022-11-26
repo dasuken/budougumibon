@@ -17,7 +17,7 @@ func NewMux() http.Handler {
 
 	v := validator.New()
 	at := &handler.AddTask{Store: store.Tasks, Validator: v}
-	mux.Post("/", at.ServeHTTP)
+	mux.Post("/tasks", at.ServeHTTP)
 	lt := &handler.ListTask{Store: store.Tasks}
 	mux.Get("/tasks", lt.ServeHTTP)
 
