@@ -8,7 +8,25 @@ services:
     environment:
       TODO_ENV: dev
       PORT: 8080
+      TODO_DB_HOST: todo-db
+      TODO_DB_USER: todo
+      TODO_DB_PORT: 5433
+      TODO_DB_PASSWORD: todo
+      TODO_DB_DATABASE: todo
     volumes:
       - .:/app
     ports:
       - "18000:8080"
+  todo-db:
+    image: postgres:12-alpine
+    container_name: todo-db
+    environment:
+      POSTGRES_PASSWORD: todo
+      POSTGRES_USER: todo
+      POSTGRES_DB: todo
+    volumes:
+      - todo-db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+volumes:
+  todo-db-data:
