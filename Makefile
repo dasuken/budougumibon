@@ -1,6 +1,9 @@
 .PHONY: help build build-local up down logs ps tst
 .DEFAULT_GOAL := help
 
+migrate:
+	psqldef  -U todo -p 5433 -h 127.0.0.1 -W todo todo  < ./_tools/postgresql/schema.sql
+
 build: ## Build docker image to deploy
 	docker build -t hoge25/gotodo:${DOCKER_TAG} \
 		-- target deploy ./
