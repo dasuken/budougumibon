@@ -1,7 +1,6 @@
 on:
   push:
     branches:
-      - "main"
       - "18"
   pull_request:
 jobs:
