@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/dasuken/budougumibon/clock"
 	"github.com/dasuken/budougumibon/config"
 	"github.com/jmoiron/sqlx"
 	"time"
@@ -29,6 +30,10 @@ func New(ctx context.Context, cfg *config.Config) (*sqlx.DB, func(), error) {
 
 	xdb := sqlx.NewDb(db, "postgres")
 	return xdb, func() { _ = db.Close() }, nil
+}
+
+type Repository struct {
+	Clocker clock.Clocker
 }
 
 type Beginner interface {
