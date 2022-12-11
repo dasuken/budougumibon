@@ -39,9 +39,9 @@ jobs:
     - run: |
         go install github.com/k0kubun/sqldef/cmd/psqldef@latest
         psqldef  -U todo -p 5432 -h 127.0.0.1 -W todo todo < ./_tools/postgresql/schema.sql
-#    - name: Debug
-#      if: ${{ failure(￿) }}
-#      uses: mxschmitt/action-tmate@v3
     - run: go test ./... -coverprofile=coverage.out
     - name: report coverage
       uses: k1LoW/octocov-action@v0
+#    - name: Debug
+#      if: ${{ failure(￿) }}
+#      uses: mxschmitt/action-tmate@v3
