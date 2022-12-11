@@ -2,13 +2,23 @@ on:
   push:
     branches:
       - "18"
+      - "main"
   pull_request:
+name: test
 jobs:
-  test:
-    runs-on: ubunts-latest
+  container-job:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+    # Docker Hub image that `container-job` executes in
+    # container: golang:1.18.2-bullseye
+    # Service containers to run with `container-job`
     services:
+      # Label used to access the service container
       postgres:
-        image: postgres:12-alpine
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -20,6 +30,7 @@ jobs:
           POSTGRES_PASSWORD: todo
           POSTGRES_USER: todo
           POSTGRES_DB: todo
+
     steps:
     - uses: actions/setup-go@v3
       with:
@@ -27,7 +38,10 @@ jobs:
     - uses: actions/checkout@v3
     - run: |
         go install github.com/k0kubun/sqldef/cmd/psqldef@latest
-        psqldef  -U todo -p 5433 -h 127.0.0.1 -W todo todo < ./_tools/postgresql/schema.sql
+        psqldef  -U todo -p 5432 -h 127.0.0.1 -W todo todo < ./_tools/postgresql/schema.sql
+#    - name: Debug
+#      if: ${{ failure(￿) }}
+#      uses: mxschmitt/action-tmate@v3
     - run: go test ./... -coverprofile=coverage.out
     - name: report coverage
       uses: k1LoW/octocov-action@v0
