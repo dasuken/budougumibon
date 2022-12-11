@@ -42,6 +42,3 @@ jobs:
     - run: go test ./... -coverprofile=coverage.out
     - name: report coverage
       uses: k1LoW/octocov-action@v0
-#    - name: Debug
-#      if: ${{ failure(￿) }}
-#      uses: mxschmitt/action-tmate@v3
