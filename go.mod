@@ -3,6 +3,7 @@ module github.com/dasuken/budougumibon
 go 1.16
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0 // indirect
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/go-chi/chi/v5 v5.0.7 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
