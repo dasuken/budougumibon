@@ -18,7 +18,7 @@ services:
     ports:
       - "18000:8080"
   todo-db:
-    image: postgres:12-alpine
+    image: postgres:14-alpine
     container_name: todo-db
     environment:
       POSTGRES_PASSWORD: todo
@@ -27,6 +27,6 @@ services:
     volumes:
       - todo-db-data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5432:5432"
 volumes:
   todo-db-data:
