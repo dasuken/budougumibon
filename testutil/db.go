@@ -11,9 +11,9 @@ import (
 func OpenDBForTest(t *testing.T) *sqlx.DB {
 	t.Helper()
 
-	port := 33306
+	port := 55432
 	if _, defined := os.LookupEnv("CI"); defined {
-		port = 3306
+		port = 5432
 	}
 	db, err := sql.Open("postgres",
 		fmt.Sprintf(
@@ -25,6 +25,6 @@ func OpenDBForTest(t *testing.T) *sqlx.DB {
 	}
 	t.Cleanup(
 		func() { _ = db.Close() },
-		)
+	)
 	return sqlx.NewDb(db, "postgres")
 }
