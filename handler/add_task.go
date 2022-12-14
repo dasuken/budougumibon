@@ -5,20 +5,21 @@ import (
 	"github.com/dasuken/budougumibon/entity"
 	"github.com/dasuken/budougumibon/store"
 	"github.com/go-playground/validator/v10"
+	"github.com/jmoiron/sqlx"
 	"net/http"
-	"time"
 )
 
+// ここで依存性の逆転なのね
 type AddTask struct {
-	Store *store.TaskStore
+	//Store *store.TaskStore
+	DB        *sqlx.DB
+	Repo      *store.Repository
 	Validator *validator.Validate
 }
 
 func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// context
 	ctx := r.Context()
 
-	// parse
 	var b struct {
 		Title string `json:"title" validate:"required"`
 	}
@@ -40,13 +41,12 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// mapping
 	t := &entity.Task{
-		Title: b.Title,
+		Title:  b.Title,
 		Status: entity.TaskStatusTodo,
-		Created: time.Now(),
 	}
 
 	// add
-	id, err := at.Store.Add(t)
+	err = at.Repo.AddTask(ctx, at.DB, t)
 	if err != nil {
 		RespondJson(ctx, w, &ErrResponse{
 			Message: err.Error(),
@@ -57,6 +57,6 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// response
 	rsp := struct {
 		ID entity.TaskID `json:"id"`
-	}{ID: id}
+	}{ID: t.ID}
 	RespondJson(ctx, w, rsp, http.StatusOK)
 }
