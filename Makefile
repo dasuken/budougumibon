@@ -1,6 +1,21 @@
 .PHONY: help build build-local up down logs ps tst
 .DEFAULT_GOAL := help
 
+postgres:
+	docker run --name postgres -p 5432:5432  -e POSTGRES_USER=todo -e POSTGRES_PASSWORD=todo -d postgres:14-alpine
+
+createdb:
+	docker exec -it postgres createdb --username=todo --owner=todo todo
+
+dropdb:
+	docker exec -it postgres dropdb simple_bank
+
+execpsql:
+	docker exec -it postgres /usr/local/bin/psql -U todo -c "$(C)"
+
+migrate:
+	psqldef  -U todo -p 5432 -h 127.0.0.1 -W todo todo  < ./_tools/postgresql/schema.sql
+
 build: ## Build docker image to deploy
 	docker build -t hoge25/gotodo:${DOCKER_TAG} \
 		-- target deploy ./
