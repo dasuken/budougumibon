@@ -6,6 +6,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"os"
 	"testing"
+
+	_ "github.com/lib/pq"
 )
 
 func OpenDBForTest(t *testing.T) *sqlx.DB {

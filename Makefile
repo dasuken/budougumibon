@@ -13,8 +13,8 @@ dropdb:
 execpsql:
 	docker exec -it postgres /usr/local/bin/psql -U todo -c "$(C)"
 
-migrate:
-	psqldef  -U todo -p 5432 -h 127.0.0.1 -W todo todo  < ./_tools/postgresql/schema.sql
+migrate: ## db container port 55432. if you use psql well known port, change this value.
+	psqldef  -U todo -p 55432 -h 127.0.0.1 -W todo todo  < ./_tools/postgresql/schema.sql
 
 build: ## Build docker image to deploy
 	docker build -t hoge25/gotodo:${DOCKER_TAG} \

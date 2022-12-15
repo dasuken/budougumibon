@@ -27,6 +27,6 @@ services:
     volumes:
       - todo-db-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "55432:5432"
 volumes:
   todo-db-data:
