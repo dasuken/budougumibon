@@ -15,9 +15,9 @@ import (
 func New(ctx context.Context, cfg *config.Config) (*sqlx.DB, func(), error) {
 	db, err := sql.Open("postgres",
 		fmt.Sprintf(
-			"%s:%s@tcp(%s:%d)/%s?parseTime=true",
+			"postgres://\"%s:%s@tcp(%s:%d)/%s?sslmode=disable",
 			cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName,
-			))
+		))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -25,7 +25,7 @@ func New(ctx context.Context, cfg *config.Config) (*sqlx.DB, func(), error) {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	if err := db.PingContext(ctx); err != nil {
-		return nil, func() {_ = db.Close() }, err
+		return nil, func() { _ = db.Close() }, err
 	}
 
 	xdb := sqlx.NewDb(db, "postgres")
@@ -65,4 +65,3 @@ var (
 	_ Execer   = (*sqlx.DB)(nil)
 	_ Execer   = (*sqlx.Tx)(nil)
 )
-

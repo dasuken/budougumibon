@@ -20,7 +20,6 @@ func OpenDBForTest(t *testing.T) *sqlx.DB {
 	fmt.Println(port)
 	db, err := sql.Open("postgres",
 		fmt.Sprintf(
-			//"todo:todo@tcp(127.0.0.1:%d)/todo?parseTime=true",
 			"postgres://todo:todo@127.0.0.1:%d/todo?sslmode=disable",
 			port,
 		))
