@@ -16,7 +16,7 @@ func prepareTasks(ctx context.Context, t *testing.T, con Execer) entity.Tasks {
 	t.Helper()
 
 	c := clock.FixedClocker{}
-	wants := entity.Tasks {
+	wants := entity.Tasks{
 		{
 			Title: "want task 1", Status: "todo",
 			Created: c.Now(), Modified: c.Now(),
@@ -31,14 +31,14 @@ func prepareTasks(ctx context.Context, t *testing.T, con Execer) entity.Tasks {
 		},
 	}
 	// id insert
-	sql := `INERT INTO task(title, status, created, modified)
+	sql := `INSERT INTO task(title, status, created, modified)
 				VALUES(?, ?, ?, ?),(?, ?, ?, ?),(?, ?, ?, ?);
 			`
 	result, err := con.ExecContext(ctx, sql,
 		wants[0].Title, wants[0].Status, wants[0].Created, wants[0].Modified,
 		wants[1].Title, wants[1].Status, wants[1].Created, wants[1].Modified,
 		wants[2].Title, wants[2].Status, wants[2].Created, wants[2].Modified,
-		)
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,6 +59,7 @@ func TestRepository_ListTasks(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	wants := prepareTasks(ctx, t, tx)
 
 	sut := &Repository{}
@@ -78,9 +79,9 @@ func TestRepository_AddTask(t *testing.T) {
 
 	var wantID int64 = 20
 	okTask := &entity.Task{
-		Title: "ok task",
-		Status: "todo",
-		Created: c.Now(),
+		Title:    "ok task",
+		Status:   "todo",
+		Created:  c.Now(),
 		Modified: c.Now(),
 	}
 
