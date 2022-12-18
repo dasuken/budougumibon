@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/dasuken/budougumibon/clock"
 	"github.com/dasuken/budougumibon/entity"
@@ -18,37 +19,35 @@ func prepareTasks(ctx context.Context, t *testing.T, con Execer) entity.Tasks {
 	c := clock.FixedClocker{}
 	wants := entity.Tasks{
 		{
-			Title: "want task 1", Status: "todo",
+			ID: 1, Title: "want task 1", Status: "todo",
 			Created: c.Now(), Modified: c.Now(),
 		},
 		{
-			Title: "want task 2", Status: "todo",
+			ID: 2, Title: "want task 2", Status: "todo",
 			Created: c.Now(), Modified: c.Now(),
 		},
 		{
-			Title: "want task 3", Status: "todo",
+			ID: 3, Title: "want task 3", Status: "todo",
 			Created: c.Now(), Modified: c.Now(),
 		},
 	}
-	// id insert
-	sql := `INSERT INTO task(title, status, created, modified)
-				VALUES(?, ?, ?, ?),(?, ?, ?, ?),(?, ?, ?, ?);
+
+	sql := `INSERT INTO task(id, title, status, created, modified)
+				VALUES(:id, :title, :status, :created, :modified)
+				RETURNING id
 			`
-	result, err := con.ExecContext(ctx, sql,
-		wants[0].Title, wants[0].Status, wants[0].Created, wants[0].Modified,
-		wants[1].Title, wants[1].Status, wants[1].Created, wants[1].Modified,
-		wants[2].Title, wants[2].Status, wants[2].Created, wants[2].Modified,
-	)
+
+	dataMap := []map[string]interface{}{
+		{"id": wants[0].ID, "title": wants[0].Title, "status": wants[0].Status, "created": wants[0].Created, "modified": wants[0].Modified},
+		{"id": wants[1].ID, "title": wants[1].Title, "status": wants[1].Status, "created": wants[1].Created, "modified": wants[1].Modified},
+		{"id": wants[2].ID, "title": wants[2].Title, "status": wants[2].Status, "created": wants[2].Created, "modified": wants[2].Modified},
+	}
+
+	result, err := con.NamedExecContext(ctx, sql, dataMap)
+	fmt.Println(result)
 	if err != nil {
 		t.Fatal(err)
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	wants[0].ID = entity.TaskID(id)
-	wants[1].ID = entity.TaskID(id + 1)
-	wants[2].ID = entity.TaskID(id + 2)
 	return wants
 }
 
